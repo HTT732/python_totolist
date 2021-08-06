@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    {% load static %}
+    <link href="{% static 'login/vendor/fullcalendar/main.css'%}" rel='stylesheet' />
+
+    {% comment %} css {% endcomment %}
+    <link href="{%static 'login/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{%static 'login/vendor/fontawesome/css/all.min.css'%}">
+    <link rel="stylesheet" type="text/css" href="{%static 'login/css/task.css'%}">
+
+    <!-- script -->
+    <script type="text/javascript" src="{%static 'login/js/jquery-3.6.0.js'%}"></script>
+    <script src="{%static 'login/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+    <script type="text/javascript" src="{%static 'login/js/app.js'%}"></script>
+    <script src="{% static 'login/vendor/fullcalendar/main.js'%}"></script>
+    <script src="{%static 'login/vendor/fullcalendar/locales-all.js'%}"></script>
+  
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth'
+        });
+        calendar.render();
+      });
+
+    </script>
+  </head>
+  <body>
+    <div id="listData" class="hide">
+      {% for task in tasks %}
+        <data>
+            <input class="title" value="{{task.title}}">
+            <input class="starting-day" value="{{task.start_day|date:"Y-m-d"}}">
+            <input class="ending-day" value="{{task.end_day|date:"Y-m-d"}}">
+            <input class="status" value="
+              {% if task.status.title == "Planning" %}
+                #0DCAF0
+              {%elif task.status.title == "Doing"%}
+                #FFC107
+              {%elif task.status.title == "Complete"%}
+                #198754
+              {% endif %}
+            ">
+        </data>
+      {% endfor %}
+    </div>
+    <div class="container">
+      <section id="header">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link fas fa-clipboard-list" aria-current="page" href="{% url 'task' %}"> Todo List</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active far fa-calendar-alt" href="{% url 'calendar'%}"> Calendar</a>
+                </li>
+              </ul>
+            </div>
+            <div class="d-flex align-items-center" method="get">
+              <span class="px-2 text-light">Welcome, <strong>{{request.user}}</strong></span>
+              <a class="btn btn-outline-warning" href="{% url 'logout'%}">Logout</a>
+            </div>
+          </div>
+        </nav>
+      </section>
+    
+      <div id='calendar' class="my-3"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var initialLocaleCode = 'vi';
+            var data = getDataEvent();
+            var date = new Date().toISOString().slice(0, 10);
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prevYear,prev,next,nextYear today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                },
+                initialDate: date,
+                locale: initialLocaleCode,
+                navLinks: true, // can click day/week names to navigate views
+                dayMaxEvents: true, // allow "more" link when too many events
+                events: data
+            });
+
+            calendar.render();
+        });
+
+        function getDataEvent() {
+            var listData = document.getElementsByTagName('data');
+            var data = Array();
+
+            for(i = 0; i < listData.length; i++) {
+                var title = listData[i].querySelector('.title').value.trim();
+                var startingDay = listData[i].querySelector('.starting-day').value.trim();
+                var endingDay = listData[i].querySelector('.ending-day').value.trim();
+                var status = listData[i].querySelector('.status').value.trim();
+                var dt = {
+                    'title':title,
+                    'start':startingDay,
+                    'end':endingDay,
+                    'color':status
+                }
+
+                data.push(dt);
+            }
+            return data;
+        }
+    </script>
+  </body>
+</html>
