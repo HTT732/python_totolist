@@ -1,0 +1,11 @@
+{
+  "applinks": {
+      "apps": [],
+      "details": [
+      {
+        "appID": "Z5N69VU35V.mpf.app.mobile",
+        "paths": ["*"]
+      }
+    ]
+  }
+}
